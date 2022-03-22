@@ -5,6 +5,12 @@ export default class Companies extends Model {
   public static initialize(sequelize: Sequelize) {
     this.init(
       {
+        companies_id: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+        },
         companies_name_responsable: {
           type: DataTypes.STRING,
           defaultValue: "",
@@ -12,9 +18,6 @@ export default class Companies extends Model {
         companies_cnpj: {
           type: DataTypes.STRING,
           defaultValue: "",
-          validate: {
-            is: /[0-9]{2}\.?[0-9]{3}\.?[0-9]{3}\/?[0-9]{4}\-?[0-9]{2}/,
-          },
         },
         companies_phone: {
           type: DataTypes.STRING,
@@ -24,21 +27,10 @@ export default class Companies extends Model {
           type: DataTypes.STRING,
           defaultValue: "",
           unique: true,
-          validate: {
-            isEmail: {
-              msg: "Email inválido",
-            },
-          },
         },
         companies_password: {
           type: DataTypes.STRING,
           defaultValue: "",
-          validate: {
-            len: {
-              args: [6, 10],
-              msg: "A senha precisa ter entre 6 e 10 caracteres",
-            },
-          },
         },
         password_hash: {
           type: DataTypes.STRING,

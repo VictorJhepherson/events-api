@@ -34,8 +34,6 @@ export async function userRequired(
       });
     }
 
-    //req.user = user;
-
     return next();
   } catch (e) {
     return res.status(401).json({
@@ -69,8 +67,6 @@ export async function companyRequired(
         errors: ["Organizador não existe"],
       });
     }
-
-    //req.company = company;
 
     return next();
   } catch (e) {

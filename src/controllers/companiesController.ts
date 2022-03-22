@@ -5,14 +5,37 @@ import { Request, Response } from "express";
 import Companies from "../models/companiesModel";
 import { sign } from "jsonwebtoken";
 
+import Validation from "../errors/validation";
+
 class CompaniesController {
   async createCompany(req: Request, res: Response) {
     try {
-      const newCompany = await Companies.create(req.body);
+      const {
+        companies_mail,
+        companies_phone,
+        companies_password,
+        companies_cnpj,
+      } = req.body;
 
-      return res
-        .status(200)
-        .json({ success: true, data: newCompany, token: "", errors: [] });
+      const validation = new Validation().validationCompanyFields(
+        companies_mail,
+        companies_phone,
+        companies_password,
+        companies_cnpj
+      );
+
+      if (validation.success) {
+        const newCompany = await Companies.create(req.body);
+
+        return res
+          .status(200)
+          .json({ success: true, data: newCompany, token: "", errors: [] });
+      } else {
+        const errors = validation.errors;
+        return res
+          .status(500)
+          .json({ success: false, data: "", token: "", errors: errors });
+      }
     } catch (e) {
       if (e instanceof Error) {
         return res
@@ -24,7 +47,15 @@ class CompaniesController {
 
   async updateCompany(req: Request, res: Response) {
     try {
-      const companies = await Companies.findByPk(req.body.companies_id);
+      const {
+        companies_id,
+        companies_cnpj,
+        companies_phone,
+        companies_mail,
+        companies_password,
+      } = req.body;
+
+      const companies = await Companies.findByPk(companies_id);
 
       if (!companies) {
         return res.status(400).json({
@@ -35,11 +66,25 @@ class CompaniesController {
         });
       }
 
-      const newData = await companies.update(req.body);
+      const validation = new Validation().validationCompanyFields(
+        companies_mail,
+        companies_phone,
+        companies_password,
+        companies_cnpj
+      );
 
-      return res
-        .status(200)
-        .json({ success: true, data: newData, token: "", errors: [] });
+      if (validation.success) {
+        const newData = await companies.update(req.body);
+
+        return res
+          .status(200)
+          .json({ success: true, data: newData, token: "", errors: [] });
+      } else {
+        const errors = validation.errors;
+        return res
+          .status(500)
+          .json({ success: false, data: "", token: "", errors: errors });
+      }
     } catch (e) {
       if (e instanceof Error) {
         return res
@@ -63,9 +108,18 @@ class CompaniesController {
         });
       }
 
+      if (!(await company.passwordIsValid(companies_password))) {
+        return res.status(400).json({
+          success: false,
+          data: "",
+          token: "",
+          errors: ["Senha inválida"],
+        });
+      }
+
       const token = sign(
         { companies_mail, companies_password },
-        String(process.env.JWT_SECRET),
+        process.env.JWT_SECRET || "#ventsMBL4bs",
         { expiresIn: "7d" }
       );
 

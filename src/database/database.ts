@@ -20,6 +20,12 @@ const sequelizeConnection = new Sequelize(
   {
     host: databaseConfig.host,
     dialect: databaseConfig.dialect as Dialect,
+    define: {
+      timestamps: true,
+      underscored: true,
+      createdAt: "created_at",
+      updatedAt: "updated_at",
+    },
   }
 );
 
