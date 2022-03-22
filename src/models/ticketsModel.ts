@@ -1,14 +1,20 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import Event from "./eventsModel";
-import User from "./usersModel";
+//import Event from "./eventsModel";
+//import User from "./usersModel";
 
 export default class Ticket extends Model {
   static initialize(sequelize: Sequelize) {
     this.init(
       {
+        ticket_id: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+        },
         ticket_purchase_date: {
           type: DataTypes.DATE,
-          defaultValue: "",
+          allowNull: false,
         },
       },
       { sequelize }

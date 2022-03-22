@@ -1,50 +1,56 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-import Companies from "./companiesModel";
-import Ticket from "./ticketsModel";
+//import Companies from "./companiesModel";
+//import Ticket from "./ticketsModel";
 
 export default class Event extends Model {
   public static initialize(sequelize: Sequelize) {
     this.init(
       {
+        events_id: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          autoIncrement: true,
+          primaryKey: true,
+        },
         events_name: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         events_date: {
           type: DataTypes.DATE,
-          defaultValue: "",
+          allowNull: false,
         },
         events_description: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         events_street: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         events_number: {
           type: DataTypes.INTEGER,
-          defaultValue: "",
+          allowNull: false,
         },
         events_neighborhood: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         events_city: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         events_state: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         events_tickets_available: {
           type: DataTypes.INTEGER,
-          defaultValue: "",
+          allowNull: false,
         },
         events_ticket_price: {
           type: DataTypes.DECIMAL,
-          defaultValue: "",
+          allowNull: false,
         },
       },
       { sequelize }

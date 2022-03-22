@@ -19,14 +19,14 @@ class UserController {
         user_cpf
       );
 
-      if (validation.success) {
+      if ((await validation).success) {
         const newUser = await User.create(req.body);
 
         return res
           .status(200)
           .json({ success: true, data: newUser, token: "", errors: [] });
       } else {
-        const errors = validation.errors;
+        const errors = (await validation).errors;
         return res
           .status(500)
           .json({ success: false, data: "", token: "", errors: errors });
@@ -63,14 +63,14 @@ class UserController {
         user_cpf
       );
 
-      if (validation.success) {
+      if ((await validation).success) {
         const newData = await user.update(req.body);
 
         return res
           .status(200)
           .json({ success: true, data: newData, token: "", errors: [] });
       } else {
-        const errors = validation.errors;
+        const errors = (await validation).errors;
         return res
           .status(500)
           .json({ success: false, data: "", token: "", errors: errors });

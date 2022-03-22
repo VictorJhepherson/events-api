@@ -13,24 +13,24 @@ export default class User extends Model {
         },
         user_name: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         user_cpf: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         user_phone: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         user_mail: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
           unique: true,
         },
         user_password: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         password_hash: {
           type: DataTypes.STRING,

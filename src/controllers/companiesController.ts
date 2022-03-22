@@ -24,23 +24,26 @@ class CompaniesController {
         companies_cnpj
       );
 
-      if (validation.success) {
+      if ((await validation).success) {
         const newCompany = await Companies.create(req.body);
 
         return res
           .status(200)
           .json({ success: true, data: newCompany, token: "", errors: [] });
       } else {
-        const errors = validation.errors;
+        const errors = (await validation).errors;
         return res
           .status(500)
           .json({ success: false, data: "", token: "", errors: errors });
       }
     } catch (e) {
       if (e instanceof Error) {
-        return res
-          .status(500)
-          .json({ success: false, data: "", token: "", errors: [e.message] });
+        return res.status(500).json({
+          success: false,
+          data: "",
+          token: "",
+          errors: [e.message],
+        });
       }
     }
   }
@@ -73,14 +76,14 @@ class CompaniesController {
         companies_cnpj
       );
 
-      if (validation.success) {
+      if ((await validation).success) {
         const newData = await companies.update(req.body);
 
         return res
           .status(200)
           .json({ success: true, data: newData, token: "", errors: [] });
       } else {
-        const errors = validation.errors;
+        const errors = (await validation).errors;
         return res
           .status(500)
           .json({ success: false, data: "", token: "", errors: errors });

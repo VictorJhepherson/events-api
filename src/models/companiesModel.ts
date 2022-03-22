@@ -13,24 +13,24 @@ export default class Companies extends Model {
         },
         companies_name_responsable: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         companies_cnpj: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         companies_phone: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         companies_mail: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
           unique: true,
         },
         companies_password: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         password_hash: {
           type: DataTypes.STRING,
@@ -38,7 +38,7 @@ export default class Companies extends Model {
         },
         companies_name_corporate: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
       },
       { sequelize }
