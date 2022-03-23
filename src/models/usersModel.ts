@@ -48,8 +48,12 @@ export default class User extends Model {
     return this;
   }
 
-  passwordIsValid(password: string) {
+  async passwordIsValid(password: string) {
     const password_hash = this.get("password_hash") as string;
-    return bcryptjs.compare(password, password_hash);
+    return await bcryptjs.compare(password, password_hash);
+  }
+
+  static associate(models) {
+    this.belongsTo(models.Ticket, { foreignKey: "user_id" });
   }
 }

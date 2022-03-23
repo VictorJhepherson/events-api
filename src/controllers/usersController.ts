@@ -42,7 +42,7 @@ class UserController {
 
   async updateUser(req: Request, res: Response) {
     try {
-      const { user_id, user_email, user_cpf, password_hash, user_phone } =
+      const { user_id, user_mail, user_cpf, password_hash, user_phone } =
         req.body;
 
       const user = await User.findByPk(user_id);
@@ -57,7 +57,7 @@ class UserController {
       }
 
       const validation = new Validation().validationUserFields(
-        user_email,
+        user_mail,
         user_phone,
         password_hash,
         user_cpf

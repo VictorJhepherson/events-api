@@ -36,4 +36,9 @@ export default class Ticket extends Model {
 
     return this;
   }
+
+  static associate(models) {
+    this.hasOne(models.User, { foreignKey: "user_id" });
+    this.belongsTo(models.Event, { foreignKey: "ticket_id_event" });
+  }
 }

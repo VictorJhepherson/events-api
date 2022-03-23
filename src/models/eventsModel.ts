@@ -66,4 +66,9 @@ export default class Event extends Model {
 
     return this;
   }
+
+  static associate(models) {
+    this.hasOne(models.Companies, { foreignKey: "events_id_companies" });
+    this.belongsTo(models.Ticket, { foreignKey: "events_id" });
+  }
 }

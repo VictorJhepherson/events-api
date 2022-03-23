@@ -60,6 +60,10 @@ class TicketController {
     try {
       const tickets = await Ticket.findAll({
         where: { ticket_id_user: req.params.id },
+        include: {
+          model: Event,
+          required: true,
+        },
       });
 
       return res

@@ -30,3 +30,6 @@ const sequelizeConnection = new Sequelize(
 );
 
 models.forEach((model) => model.initialize(sequelizeConnection));
+models.forEach(
+  (model) => model.associate && model.associate(sequelizeConnection.models)
+);

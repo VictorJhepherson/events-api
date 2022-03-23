@@ -168,9 +168,9 @@ export default class Validation {
     return true;
   }
 
-  async userExists(user_email: string, user_cpf: string) {
+  async userExists(user_mail: string, user_cpf: string) {
     const emailAlready = await User.findOne({
-      where: { [Op.or]: [{ user_email }, { user_cpf }] },
+      where: { [Op.or]: [{ user_mail }, { user_cpf }] },
     });
     if (emailAlready) return false;
 
