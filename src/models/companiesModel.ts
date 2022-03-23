@@ -28,13 +28,9 @@ export default class Companies extends Model {
           allowNull: false,
           unique: true,
         },
-        companies_password: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
         password_hash: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
         companies_name_corporate: {
           type: DataTypes.STRING,
@@ -45,8 +41,8 @@ export default class Companies extends Model {
     );
 
     this.addHook("beforeSave", async (company: Companies) => {
-      const password = company.get("companies_password") as string;
-      let password_hash = company.get("password_hash");
+      const password = company.get("password_hash") as string;
+      let password_hash: string;
       if (password) {
         password_hash = await bcryptjs.hash(password, 8);
         company.set({ password_hash });

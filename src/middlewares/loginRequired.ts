@@ -7,8 +7,14 @@ import { verify } from "jsonwebtoken";
 import User from "../models/usersModel";
 import Companies from "../models/companiesModel";
 
-interface TokenPayload {
-  id: number;
+interface CompanyPayload {
+  companies_id: number;
+  companie_mail: string;
+}
+
+interface UserPayload {
+  user_id: number;
+  user_mail: string;
 }
 
 export async function userRequired(
@@ -17,11 +23,11 @@ export async function userRequired(
   next: NextFunction
 ) {
   try {
-    const token = String(req.headers.authorization?.split(" ")[1]);
-    const { id: user_id } = verify(
+    const token = String(req.headers.authorization?.split(" ")[2]);
+    const { user_id } = verify(
       token,
-      String(process.env.JWT_SECRET)
-    ) as TokenPayload;
+      process.env.JWT_SECRET || "#ventsMBL4bs"
+    ) as UserPayload;
 
     const user = await User.findByPk(user_id);
 
@@ -33,6 +39,8 @@ export async function userRequired(
         errors: ["Usuário não existe"],
       });
     }
+
+    req.user = user;
 
     return next();
   } catch (e) {
@@ -51,11 +59,11 @@ export async function companyRequired(
   next: NextFunction
 ) {
   try {
-    const token = String(req.headers.authorization?.split(" ")[1]);
-    const { id: companies_id } = verify(
+    const token = String(req.headers.authorization?.split(" ")[2]);
+    const { companies_id } = verify(
       token,
-      String(process.env.JWT_SECRET)
-    ) as TokenPayload;
+      process.env.JWT_SECRET || "#ventsMBL4bs"
+    ) as CompanyPayload;
 
     const company = await Companies.findByPk(companies_id);
 
@@ -68,8 +76,11 @@ export async function companyRequired(
       });
     }
 
+    req.company = company;
+
     return next();
   } catch (e) {
+    console.log(e);
     return res.status(401).json({
       success: false,
       data: "",

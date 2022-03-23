@@ -1,6 +1,4 @@
 import { DataTypes, Model, Sequelize } from "sequelize";
-//import Companies from "./companiesModel";
-//import Ticket from "./ticketsModel";
 
 export default class Event extends Model {
   public static initialize(sequelize: Sequelize) {
@@ -17,7 +15,7 @@ export default class Event extends Model {
           allowNull: false,
         },
         events_date: {
-          type: DataTypes.DATE,
+          type: DataTypes.STRING,
           allowNull: false,
         },
         events_description: {
@@ -52,12 +50,19 @@ export default class Event extends Model {
           type: DataTypes.DECIMAL,
           allowNull: false,
         },
+        events_id_companies: {
+          type: DataTypes.INTEGER,
+          allowNull: false,
+          references: {
+            model: "companies",
+            key: "companies_id",
+          },
+          onDelete: "SET NULL",
+          onUpdate: "CASCADE",
+        },
       },
       { sequelize }
     );
-
-    //this.hasMany(Ticket, { foreignKey: "ticket_id_event" });
-    //this.belongsTo(Companies, { foreignKey: "companies_id" });
 
     return this;
   }

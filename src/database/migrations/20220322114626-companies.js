@@ -26,12 +26,9 @@ module.exports = {
         allowNull: false,
         unique: true,
       },
-      companies_password: {
-        type: Sequelize.STRING,
-        allowNull: false,
-      },
       password_hash: {
         type: Sequelize.STRING,
+        allowNull: false,
         defaultValue: "",
       },
       companies_name_corporate: {

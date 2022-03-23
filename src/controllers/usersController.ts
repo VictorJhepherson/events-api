@@ -10,12 +10,12 @@ import Validation from "../errors/validation";
 class UserController {
   async createUser(req: Request, res: Response) {
     try {
-      const { user_cpf, user_phone, user_email, user_password } = req.body;
+      const { user_cpf, user_phone, user_mail, password_hash } = req.body;
 
       const validation = new Validation().validationUserFields(
-        user_email,
+        user_mail,
         user_phone,
-        user_password,
+        password_hash,
         user_cpf
       );
 
@@ -42,7 +42,7 @@ class UserController {
 
   async updateUser(req: Request, res: Response) {
     try {
-      const { user_id, user_email, user_cpf, user_password, user_phone } =
+      const { user_id, user_email, user_cpf, password_hash, user_phone } =
         req.body;
 
       const user = await User.findByPk(user_id);
@@ -59,7 +59,7 @@ class UserController {
       const validation = new Validation().validationUserFields(
         user_email,
         user_phone,
-        user_password,
+        password_hash,
         user_cpf
       );
 
@@ -86,8 +86,8 @@ class UserController {
 
   async loginUser(req: Request, res: Response) {
     try {
-      const { user_email, user_password } = req.body;
-      const user = await User.findOne({ where: { user_email } });
+      const { user_mail, password_hash } = req.body;
+      const user = await User.findOne({ where: { user_mail } });
 
       if (!user) {
         return res.status(401).json({
@@ -98,7 +98,7 @@ class UserController {
         });
       }
 
-      if (!(await user.passwordIsValid(user_password))) {
+      if (!(await user.passwordIsValid(password_hash))) {
         return res.status(400).json({
           success: false,
           data: "",
@@ -107,8 +107,10 @@ class UserController {
         });
       }
 
+      const user_id = user.get("user_id");
+
       const token = sign(
-        { user_email, user_password },
+        { user_id, user_mail },
         process.env.JWT_SECRET || "#ventsMBL4bs",
         { expiresIn: "7d" }
       );

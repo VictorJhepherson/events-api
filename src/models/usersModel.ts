@@ -28,21 +28,17 @@ export default class User extends Model {
           allowNull: false,
           unique: true,
         },
-        user_password: {
-          type: DataTypes.STRING,
-          allowNull: false,
-        },
         password_hash: {
           type: DataTypes.STRING,
-          defaultValue: "",
+          allowNull: false,
         },
       },
       { sequelize }
     );
 
     this.addHook("beforeSave", async (user: User) => {
-      const password = user.get("user_password") as string;
-      let password_hash = user.get("password_hash");
+      const password = user.get("password_hash") as string;
+      let password_hash: string;
       if (password) {
         password_hash = await bcryptjs.hash(password, 8);
         user.set({ password_hash });

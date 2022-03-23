@@ -1,11 +1,14 @@
 import { Request, Response } from "express";
 import Event from "../models/eventsModel";
 import Ticket from "../models/ticketsModel";
+import Validation from "../errors/validation";
 
 class TicketController {
   async createTicket(req: Request, res: Response) {
     try {
-      const event = await Event.findByPk(req.body.ticket_id_event);
+      const { events_id } = req.body;
+
+      const event = await Event.findByPk(events_id);
 
       const tickets: number = event?.getDataValue("events_tickets_available");
 
@@ -18,13 +21,32 @@ class TicketController {
         });
       }
 
-      const { ticket_id_user, ticket_id_event } = req.body;
+      const ticket = await Ticket.create({
+        ticket_id_event: events_id,
+        ticket_id_user: req.user.user_id,
+      });
 
-      const ticket = await Ticket.create({ ticket_id_event, ticket_id_user });
+      const validation = new Validation().validationTicketFields(
+        events_id,
+        tickets
+      );
 
-      return res
-        .status(200)
-        .json({ success: true, data: ticket, token: "", errors: [] });
+      if ((await validation).success) {
+        return res
+          .status(200)
+          .json({ success: true, data: ticket, token: "", errors: [] });
+      } else {
+        await Ticket.destroy({
+          where: { tickets_id: ticket.get("tickets_id") as number },
+        });
+
+        return res.status(500).json({
+          success: false,
+          data: "",
+          token: "",
+          errors: ["Não foi possível comprar o ingresso."],
+        });
+      }
     } catch (e) {
       if (e instanceof Error) {
         return res
@@ -36,7 +58,9 @@ class TicketController {
 
   async showTickets(req: Request, res: Response) {
     try {
-      const tickets = await Ticket.findAll({ where: req.body.ticket_id_user });
+      const tickets = await Ticket.findAll({
+        where: { ticket_id_user: req.params.id },
+      });
 
       return res
         .status(200)

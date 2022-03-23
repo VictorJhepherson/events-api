@@ -1,6 +1,7 @@
 import validator from "validator";
 import User from "../models/usersModel";
 import Companies from "../models/companiesModel";
+import Event from "../models/eventsModel";
 import { Op } from "sequelize";
 
 interface errorMessage {
@@ -8,28 +9,42 @@ interface errorMessage {
   errors: Array<string>;
 }
 
+interface filterMessage {
+  params: Array<unknown>;
+}
+
 export default class Validation {
   async validationUserFields(
-    user_email: string,
+    user_mail: string,
     user_phone: string,
-    user_password: string,
+    password_hash: string,
     user_cpf: string
   ): Promise<errorMessage> {
-    let IReturn!: errorMessage;
+    const IReturn: errorMessage = { success: true, errors: [] };
 
-    if (!validator.isEmail(user_email)) {
+    if (user_mail !== undefined && !validator.isEmail(user_mail)) {
       IReturn.success = false;
       IReturn.errors.push("E-mail inválido");
-    } else if (!(await this.userExists(user_email, user_cpf))) {
+    } else if (
+      user_mail !== undefined &&
+      user_cpf !== undefined &&
+      !(await this.userExists(user_mail, user_cpf))
+    ) {
       IReturn.success = false;
       IReturn.errors.push("Usuário já existe");
-    } else if (!this.validatePassword(user_password)) {
+    } else if (
+      password_hash !== undefined &&
+      !this.validatePassword(password_hash)
+    ) {
       IReturn.success = false;
       IReturn.errors.push("A senha deve conter de 6 à 10 caracteres.");
-    } else if (!validator.isMobilePhone(user_phone, "pt-BR")) {
+    } else if (
+      user_phone !== undefined &&
+      !validator.isMobilePhone(user_phone, "pt-BR")
+    ) {
       IReturn.success = false;
       IReturn.errors.push("Celular inválido.");
-    } else if (!this.validateCPF(user_cpf)) {
+    } else if (user_cpf !== undefined && !this.validateCPF(user_cpf)) {
       IReturn.success = false;
       IReturn.errors.push("CPF inválido.");
     }
@@ -40,26 +55,94 @@ export default class Validation {
   async validationCompanyFields(
     companies_mail: string,
     companies_phone: string,
-    companies_password: string,
+    password_hash: string,
     companies_cnpj: string
   ): Promise<errorMessage> {
     const IReturn: errorMessage = { success: true, errors: [] };
 
-    if (!validator.isEmail(companies_mail)) {
+    if (companies_mail !== undefined && !validator.isEmail(companies_mail)) {
       IReturn.success = false;
       IReturn.errors.push("E-mail inválido.");
-    } else if (!(await this.companyExists(companies_mail, companies_cnpj))) {
+    } else if (
+      companies_mail !== undefined &&
+      companies_cnpj !== undefined &&
+      !(await this.companyExists(companies_mail, companies_cnpj))
+    ) {
       IReturn.success = false;
       IReturn.errors.push("Organizador já existe");
-    } else if (!validator.isMobilePhone(companies_phone, "pt-BR")) {
+    } else if (
+      companies_phone !== undefined &&
+      !validator.isMobilePhone(companies_phone, "pt-BR")
+    ) {
       IReturn.success = false;
       IReturn.errors.push("Celular inválido.");
-    } else if (!this.validatePassword(companies_password)) {
+    } else if (
+      password_hash !== undefined &&
+      !this.validatePassword(password_hash)
+    ) {
       IReturn.success = false;
       IReturn.errors.push("A senha deve conter de 6 à 10 caracteres.");
-    } else if (!this.validateCNPJ(companies_cnpj)) {
+    } else if (
+      companies_cnpj !== undefined &&
+      !this.validateCNPJ(companies_cnpj)
+    ) {
       IReturn.success = false;
       IReturn.errors.push("CNPJ inválido.");
+    }
+
+    return IReturn;
+  }
+
+  validationEventFields(events_ticket_price: string): errorMessage {
+    const IReturn: errorMessage = { success: true, errors: [] };
+
+    if (
+      events_ticket_price !== undefined &&
+      !validator.isDecimal(events_ticket_price)
+    ) {
+      IReturn.success = false;
+      IReturn.errors.push("O valor do ingresso não é decimal");
+    }
+
+    return IReturn;
+  }
+
+  validationFilterFields(
+    events_street: string,
+    events_neighborhood: string,
+    events_city: string,
+    events_state: string
+  ): filterMessage {
+    const IReturn: filterMessage = { params: [] };
+
+    if (events_street !== undefined && events_street !== "") {
+      IReturn.params.push({ events_street });
+    }
+
+    if (events_neighborhood !== undefined && events_neighborhood !== "") {
+      IReturn.params.push({ events_neighborhood });
+    }
+
+    if (events_city !== undefined && events_city !== "") {
+      IReturn.params.push({ events_city });
+    }
+
+    if (events_state !== undefined && events_state !== "") {
+      IReturn.params.push({ events_state });
+    }
+
+    return IReturn;
+  }
+
+  async validationTicketFields(
+    events_id: number,
+    events_tickets_available: number
+  ): Promise<errorMessage> {
+    const IReturn: errorMessage = { success: true, errors: [] };
+
+    if (!(await this.removeTickets(events_id, events_tickets_available))) {
+      IReturn.success = false;
+      IReturn.errors.push("Não foi possível comprar o ingresso.");
     }
 
     return IReturn;
@@ -99,6 +182,16 @@ export default class Validation {
       where: { [Op.or]: [{ companies_mail }, { companies_cnpj }] },
     });
     if (emailAlready) return false;
+
+    return true;
+  }
+
+  async removeTickets(events_id: number, events_tickets_available: number) {
+    const event = await Event.findByPk(events_id);
+    events_tickets_available--;
+    const updated = await event.update({ events_tickets_available });
+
+    if (!updated) return false;
 
     return true;
   }

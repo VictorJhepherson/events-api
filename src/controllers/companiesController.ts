@@ -10,17 +10,13 @@ import Validation from "../errors/validation";
 class CompaniesController {
   async createCompany(req: Request, res: Response) {
     try {
-      const {
-        companies_mail,
-        companies_phone,
-        companies_password,
-        companies_cnpj,
-      } = req.body;
+      const { companies_mail, companies_phone, password_hash, companies_cnpj } =
+        req.body;
 
       const validation = new Validation().validationCompanyFields(
         companies_mail,
         companies_phone,
-        companies_password,
+        password_hash,
         companies_cnpj
       );
 
@@ -55,7 +51,7 @@ class CompaniesController {
         companies_cnpj,
         companies_phone,
         companies_mail,
-        companies_password,
+        password_hash,
       } = req.body;
 
       const companies = await Companies.findByPk(companies_id);
@@ -72,7 +68,7 @@ class CompaniesController {
       const validation = new Validation().validationCompanyFields(
         companies_mail,
         companies_phone,
-        companies_password,
+        password_hash,
         companies_cnpj
       );
 
@@ -99,7 +95,7 @@ class CompaniesController {
 
   async loginCompany(req: Request, res: Response) {
     try {
-      const { companies_mail, companies_password } = req.body;
+      const { companies_mail, password_hash } = req.body;
       const company = await Companies.findOne({ where: { companies_mail } });
 
       if (!company) {
@@ -111,7 +107,7 @@ class CompaniesController {
         });
       }
 
-      if (!(await company.passwordIsValid(companies_password))) {
+      if (!(await company.passwordIsValid(password_hash))) {
         return res.status(400).json({
           success: false,
           data: "",
@@ -120,8 +116,10 @@ class CompaniesController {
         });
       }
 
+      const companies_id = company.get("companies_id");
+
       const token = sign(
-        { companies_mail, companies_password },
+        { companies_id, companies_mail },
         process.env.JWT_SECRET || "#ventsMBL4bs",
         { expiresIn: "7d" }
       );

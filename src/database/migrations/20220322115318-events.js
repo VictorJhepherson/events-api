@@ -14,7 +14,7 @@ module.exports = {
         allowNull: false,
       },
       events_date: {
-        type: Sequelize.DATE,
+        type: Sequelize.STRING,
         allowNull: false,
       },
       events_description: {

@@ -9,10 +9,6 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true,
       },
-      ticket_purchase_date: {
-        type: Sequelize.DATE,
-        allowNull: false,
-      },
       ticket_id_user: {
         type: Sequelize.INTEGER,
         references: {

@@ -5,6 +5,6 @@ import { userRequired } from "../middlewares/loginRequired";
 const router = Router();
 
 router.post("/", userRequired, ticketsController.createTicket);
-router.post("/show", userRequired, ticketsController.showTickets);
+router.get("/:id", userRequired, ticketsController.showTickets);
 
 export default router;
