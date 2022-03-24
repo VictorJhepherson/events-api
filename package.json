@@ -5,8 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "ts-node src/server.ts",
-    "dev-start": "nodemon src/server.ts"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev-start": "nodemon src/server.ts",
+    "migrations": "sequelize db:migrate"
   },
   "keywords": [],
   "author": "",

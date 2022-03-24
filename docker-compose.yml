@@ -1,0 +1,46 @@
+version: '3'
+
+services:
+  app:
+    depends_on:
+      - mysql
+    build: .
+    restart: unless-stopped
+    env_file:
+      - .env
+    ports:
+      - "4000:4000"
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=$DB_USER
+      - DB_PASSWORD=$DB_PASSWORD
+      - DB_NAME=$DB_NAME
+      - DB_PORT=$HOST_PORT
+    stdin_open: true
+    tty: true
+    volumes:
+      - .:/usr/app
+    command: npm start
+
+  mysql:
+    platform: linux/amd64
+    image: mysql:5.7
+    restart: unless-stopped
+    environment:
+      - MYSQL_ROOT_PASSWORD=$DB_PASSWORD
+      - MYSQL_DATABASE=$DB_NAME
+    container_name: mysql
+    ports:
+      - ${HOST_PORT}:${DB_PORT}
+    volumes:
+       - db:/var/lib/mysql
+
+  migration:
+    image: project_app:latest
+    command: ["./wait-for-it/wait-for-it.sh", "mysql:3307", "--", "npm", "run", "migrations"]
+    links:
+      - mysql
+    depends_on:
+      - mysql
+volumes:
+  db:

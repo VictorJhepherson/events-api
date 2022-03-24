@@ -101,9 +101,18 @@ class EventController {
     try {
       const events = await Event.findAll();
 
-      return res
-        .status(200)
-        .json({ success: true, data: events, token: "", errors: [] });
+      if (events.length >= 1) {
+        return res
+          .status(200)
+          .json({ success: true, data: events, token: "", errors: [] });
+      } else {
+        return res.status(500).json({
+          success: false,
+          data: "",
+          token: "",
+          errors: ["Não há eventos disponíveis."],
+        });
+      }
     } catch (e) {
       if (e instanceof Error) {
         return res
