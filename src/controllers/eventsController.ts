@@ -137,7 +137,7 @@ class EventController {
       if (validation.params.length >= 1) {
         const events = await Event.findAll({
           where: {
-            [Op.and]: validation.params,
+            [Op.or]: validation.params,
           },
         });
 
