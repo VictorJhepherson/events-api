@@ -86,8 +86,8 @@ class UserController {
 
   async loginUser(req: Request, res: Response) {
     try {
-      const { user_mail, password_hash } = req.body;
-      const user = await User.findOne({ where: { user_mail } });
+      const { email, password_hash } = req.body;
+      const user = await User.findOne({ where: { user_mail: email } });
 
       if (!user) {
         return res.status(401).json({
@@ -110,7 +110,7 @@ class UserController {
       const user_id = user.get("user_id");
 
       const token = sign(
-        { user_id, user_mail },
+        { user_id: user_id, user_mail: email },
         process.env.JWT_SECRET || "#ventsMBL4bs",
         { expiresIn: "7d" }
       );

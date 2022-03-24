@@ -95,8 +95,10 @@ class CompaniesController {
 
   async loginCompany(req: Request, res: Response) {
     try {
-      const { companies_mail, password_hash } = req.body;
-      const company = await Companies.findOne({ where: { companies_mail } });
+      const { email, password_hash } = req.body;
+      const company = await Companies.findOne({
+        where: { companies_mail: email },
+      });
 
       if (!company) {
         return res.status(400).json({
@@ -119,7 +121,7 @@ class CompaniesController {
       const companies_id = company.get("companies_id");
 
       const token = sign(
-        { companies_id, companies_mail },
+        { companies_id: companies_id, companies_mail: email },
         process.env.JWT_SECRET || "#ventsMBL4bs",
         { expiresIn: "7d" }
       );
