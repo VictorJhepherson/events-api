@@ -7,7 +7,7 @@ import Companies from "../models/companiesModel";
 import Tickets from "../models/ticketsModel";
 import Events from "../models/eventsModel";
 
-const NODE_ENV = process.env.NODE_ENV || "production";
+const NODE_ENV = process.env.NODE_ENV || "development";
 
 const databaseConfig = require("../../database.json")[NODE_ENV];
 

@@ -39,9 +39,18 @@ class EventController {
           events_id_companies: companies_id,
         });
 
-        return res
-          .status(200)
-          .json({ success: true, data: newEvent, token: "", errors: [] });
+        if (newEvent) {
+          return res
+            .status(200)
+            .json({ success: true, data: newEvent, token: "", errors: [] });
+        } else {
+          return res.status(500).json({
+            success: false,
+            data: "",
+            token: "",
+            errors: ["Não foi possível criar o evento."],
+          });
+        }
       } else {
         const errors = validation.errors;
         return res
@@ -79,9 +88,18 @@ class EventController {
       if (validation.success) {
         const newData = await event.update(req.body);
 
-        return res
-          .status(200)
-          .json({ success: true, data: newData, token: "", errors: [] });
+        if (newData) {
+          return res
+            .status(200)
+            .json({ success: true, data: newData, token: "", errors: [] });
+        } else {
+          return res.status(500).json({
+            success: false,
+            data: "",
+            token: "",
+            errors: ["Não foi possível atualizar os dados do evento."],
+          });
+        }
       } else {
         const errors = validation.errors;
         return res
@@ -141,9 +159,18 @@ class EventController {
           },
         });
 
-        return res
-          .status(200)
-          .json({ success: true, data: events, token: "", errors: [] });
+        if (events.length >= 1) {
+          return res
+            .status(200)
+            .json({ success: true, data: events, token: "", errors: [] });
+        } else {
+          return res.status(500).json({
+            success: false,
+            data: "",
+            token: "",
+            errors: ["Não há eventos com esse(s) filtros."],
+          });
+        }
       } else {
         return res.status(500).json({
           success: false,

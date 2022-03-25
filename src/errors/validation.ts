@@ -116,19 +116,19 @@ export default class Validation {
     const IReturn: filterMessage = { params: [] };
 
     if (events_street !== undefined && events_street !== "") {
-      IReturn.params.push({ events_street });
+      IReturn.params.push({ events_street: events_street });
     }
 
     if (events_neighborhood !== undefined && events_neighborhood !== "") {
-      IReturn.params.push({ events_neighborhood });
+      IReturn.params.push({ events_neighborhood: events_neighborhood });
     }
 
     if (events_city !== undefined && events_city !== "") {
-      IReturn.params.push({ events_city });
+      IReturn.params.push({ events_city: events_city });
     }
 
     if (events_state !== undefined && events_state !== "") {
-      IReturn.params.push({ events_state });
+      IReturn.params.push({ events_state: events_state });
     }
 
     return IReturn;

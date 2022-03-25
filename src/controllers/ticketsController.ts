@@ -66,9 +66,18 @@ class TicketController {
         },
       });
 
-      return res
-        .status(200)
-        .json({ success: true, data: tickets, token: "", errors: [] });
+      if (tickets.length >= 1) {
+        return res
+          .status(200)
+          .json({ success: true, data: tickets, token: "", errors: [] });
+      } else {
+        return res.status(500).json({
+          success: false,
+          data: "",
+          token: "",
+          errors: ["Não há ingressos."],
+        });
+      }
     } catch (e) {
       if (e instanceof Error) {
         return res
