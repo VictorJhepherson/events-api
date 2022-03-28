@@ -1,7 +1,8 @@
 import { Request, Response } from "express";
 import Event from "../models/eventsModel";
 import Validation from "../errors/validation";
-import { Op } from "sequelize";
+import { col, fn, Op, where } from "sequelize";
+import moment from "moment";
 
 class EventController {
   async createEvent(req: Request, res: Response) {
@@ -117,7 +118,11 @@ class EventController {
 
   async showEvents(req: Request, res: Response) {
     try {
-      const events = await Event.findAll();
+      const events = await Event.findAll({
+        where: where(fn("STR_TO_DATE", col("events_date"), "%d/%m/%Y"), {
+          [Op.gt]: moment.utc().format("YYYY-MM-DD"),
+        }),
+      });
 
       if (events.length >= 1) {
         return res
@@ -155,6 +160,9 @@ class EventController {
       if (validation.params.length >= 1) {
         const events = await Event.findAll({
           where: {
+            [Op.and]: where(fn("STR_TO_DATE", col("events_date"), "%d/%m/%Y"), {
+              [Op.gt]: moment.utc().format("YYYY-MM-DD"),
+            }),
             [Op.or]: validation.params,
           },
         });
@@ -168,7 +176,7 @@ class EventController {
             success: false,
             data: "",
             token: "",
-            errors: ["Não há eventos com esse(s) filtros."],
+            errors: ["Não há eventos com esse(s) filtros ou já expiraram."],
           });
         }
       } else {

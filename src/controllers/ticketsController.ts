@@ -2,6 +2,8 @@ import { Request, Response } from "express";
 import Event from "../models/eventsModel";
 import Ticket from "../models/ticketsModel";
 import Validation from "../errors/validation";
+import { col, fn, Op, where } from "sequelize";
+import moment from "moment";
 
 class TicketController {
   async createTicket(req: Request, res: Response) {
@@ -63,6 +65,9 @@ class TicketController {
         include: {
           model: Event,
           required: true,
+          where: where(fn("STR_TO_DATE", col("events_date"), "%d/%m/%Y"), {
+            [Op.gt]: moment.utc().format("YYYY-MM-DD"),
+          }),
         },
       });
 
@@ -75,7 +80,7 @@ class TicketController {
           success: false,
           data: "",
           token: "",
-          errors: ["Não há ingressos."],
+          errors: ["Não há ingressos ou todos estão expirados."],
         });
       }
     } catch (e) {
